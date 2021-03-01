@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <title>Article</title>
+</head>
+<body>
+    <%- include ('partials/navbar.ejs') %>
+    <%- include ('partials/flash.ejs') %> 
+    <div class="container mt-3">
+        <div class="card-body border border-secondary">
+            <h5 class="card-title mb-3"><%= article.title %></h5>
+            <h6 class="card-subtitle mb-3 text-muted"><%= article.author.username %></h6>
+            <h6 class="card-subtitle mb-2 text-muted"><%= article.dateCreated.toLocaleDateString('en-gb') %></h6>
+            <p class="card-text mb-3"><%= article.markdown %></p>
+        </div>
+        <a class="btn btn-primary mt-3" href="/articles">Back to articles</a>
+        <% if (currentUser && article.author._id.equals(currentUser._id)) {%> 
+        <a class="btn btn-warning mt-3" href="/articles/<%= article._id %>/edit">Edit article</a>
+        <div class="mt-3">
+            <form action="/articles/<%= article._id %>?_method=DELETE" method="POST">
+                <button class="btn btn-danger">Delete article</button>
+            </form>
+        </div>
+        <% } %> 
+        <div class="mt-5">
+            <h2 class="mb-3">Comments</h2>
+            <% for (comment of article.comments) { %>
+                <div class="card-body border border-secodary my-3">
+                    <h6 class="card-subtitle mb-2 text-muted"><%= comment.author.username %></h6>
+                    <p class="card-text"><%= comment.comment %></p>
+                    <% if (currentUser && comment.author._id.equals(currentUser._id)) { %>
+                        <form action="/articles/<%= article._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
+                            <button class="btn btn-danger">Delete comment</button>
+                        </form>
+                <% } %> 
+                </div>
+            <% } %>  
+        </div>
+        <% if (currentUser) { %> 
+        <div class="mt-5">
+            <form class="form-group" action="/articles/<%= article._id %>/comments" method="POST">
+                <label for="comment">Comment:</label>
+                <textarea class="form-control" id="comment" name="comment"></textarea>
+                <button class="btn btn-success mt-1">Create comment</button>
+            </form>
+        </div>
+        <% } %> 
+    </div>
+</body>
+</html>
